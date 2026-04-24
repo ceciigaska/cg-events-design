@@ -30,9 +30,6 @@
   }
 }
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
 @media (prefers-color-scheme: dark) {
   :root {
@@ -53,6 +50,10 @@
     filter: invert(1) brightness(2);
   }
 }
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 body {
   margin: 0;

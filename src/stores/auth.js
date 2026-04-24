@@ -3,35 +3,29 @@ import { supabase } from '@/lib/supabase'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    user: null
+    user: null,
+    loading: false
   }),
-
   actions: {
+    // Escuchar cambios de sesión automáticamente
+    initialize() {
+      supabase.auth.onAuthStateChange((event, session) => {
+        this.user = session?.user || null
+      })
+    },
     async login(email, password) {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      })
-
-      if (error) throw error
-
-      this.user = data.user
+      this.loading = true
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+        if (error) throw error
+        this.user = data.user
+      } finally {
+        this.loading = false
+      }
     },
-
-    async register(email, password) {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password
-      })
-
-      if (error) throw error
-
-      this.user = data.user
-    },
-
-    async getUser() {
-      const { data } = await supabase.auth.getUser()
-      this.user = data.user
+    async logout() {
+      await supabase.auth.signOut()
+      this.user = null
     }
   }
 })
